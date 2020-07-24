@@ -48,13 +48,13 @@ connection.once('open', ()=> {
 
 
 // For Production
-if(process.env.NODE_ENV === 'production'){
-    app.use(express.static('build'));
+// if(process.env.NODE_ENV === 'production'){
+//     app.use(express.static('build'));
     
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'build', 'index.html'));        
-    })
-}
+//     app.get('*', (req, res) => {
+//         res.sendFile(path.resolve(__dirname, 'build', 'index.html'));        
+//     })
+// }
 
 
 // Express Session
@@ -781,8 +781,8 @@ app.get('/', (req, res) => {
     // }
 })
 
-if(process.env.NODE_ENV === 'production') {
-    app.use(express.static('../client/build'));
-}
+// if(process.env.NODE_ENV === 'production') {
+//     app.use(express.static('../client/build'));
+// }
 
 app.listen(port, () => console.log(`Server is listening at http://localhost:${port}`))
