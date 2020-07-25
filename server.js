@@ -70,41 +70,37 @@ app.use((req, res, next) => {
 })
 
 
-const storage = multer.diskStorage({
-    destination: './public/upload',
-    filename: function(req, file, cb){
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: './public/upload',
+//     filename: function(req, file, cb){
+//         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+//     }
+// });
 
 // initialize upload
-const upload = multer({
-    storage: storage
-}).single('cook-it-abhi');
+// const upload = multer({
+//     storage: storage
+// }).single('cook-it-abhi');
 
-function checkFileType(file, cb){
-    // allowed ext
-    const filetypes = /jpeg|jpg|png|gif/;
-    // check ext
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    // check mime
-    const mimetype = filetypes.test(file.mimetype);
-
-    if(mimetype && extname){
-        return cb(null, true);
-    }else {
-        cb('Error: Images Only');
-    }
-}
-dishRouter.route('/').get((req, res)=> {
-    Dish.find((err, dishes)=> {
-        if(err){
-            console.log(err);
-        }else{
-            res.json(dishes);
-        }
-    });
-});
+// function checkFileType(file, cb){
+//     const filetypes = /jpeg|jpg|png|gif/;
+//     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+//     const mimetype = filetypes.test(file.mimetype);
+//     if(mimetype && extname){
+//         return cb(null, true);
+//     }else {
+//         cb('Error: Images Only');
+//     }
+// }
+// dishRouter.route('/').get((req, res)=> {
+//     Dish.find((err, dishes)=> {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             res.json(dishes);
+//         }
+//     });
+// });
 
 app.use(express.static(path.resolve(__dirname, './public/')));
 
@@ -151,22 +147,22 @@ app.use(express.static(path.resolve(__dirname, './public/')));
 // });
 
 // Get shops neerby user
-dishRouter.route('/near').get((req, res)=> {
-    User.find((err, resp)=> {
-        if(err){
-            console.log(err);
-        }else{
-            // res.json(resp);
-            let arr = [];
-            for(let i=0; i<resp.length; i++){
-                if(resp[i].selectedLandmark != null){
-                    arr.push(resp[i]);
-                }
-            }
-            res.json({arr})
-        }
-    });
-});
+// dishRouter.route('/near').get((req, res)=> {
+//     User.find((err, resp)=> {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             // res.json(resp);
+//             let arr = [];
+//             for(let i=0; i<resp.length; i++){
+//                 if(resp[i].selectedLandmark != null){
+//                     arr.push(resp[i]);
+//                 }
+//             }
+//             res.json({arr})
+//         }
+//     });
+// });
 
 // Search dish
 dishRouter.route('/search/:search_key').get((req, res) => {
@@ -238,23 +234,23 @@ dishRouter.route('/get/product/:id').get((req, res) =>{
 })
 
 // Get users
-dishRouter.route('/users/:id').get((req, res) => {
-    let myId = req.params.id;
-    User.find((err, users) => {
-        if(err){
-            console.log(err);
-        }
-        else{
-            User.findById(req.params.id, (err, user) => {
-                let arr = user.following || [];
-                let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
-                data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
-                res.json({data});
+// dishRouter.route('/users/:id').get((req, res) => {
+//     let myId = req.params.id;
+//     User.find((err, users) => {
+//         if(err){
+//             console.log(err);
+//         }
+//         else{
+//             User.findById(req.params.id, (err, user) => {
+//                 let arr = user.following || [];
+//                 let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
+//                 data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
+//                 res.json({data});
                 
-            });
-        }
-    });
-});
+//             });
+//         }
+//     });
+// });
 
 // // Get stories
 // dishRouter.route('/stories/:id').get((req, res) => {
@@ -351,7 +347,7 @@ dishRouter.route('/item/:id').get((req, res)=> {
     });
 });
 
-// dishRouter.route('/blog/:id').get((req, res)=> {
+dishRouter.route('/blog/:id').get((req, res)=> {
     let id = req.params.id;
     Blog.findById(id, (err, blog)=> {
         res.json(blog);
