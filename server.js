@@ -106,54 +106,51 @@ dishRouter.route('/').get((req, res)=> {
     });
 });
 
-// destination: function (req, file, cb) {
-//      cb(null, path.resolve(__dirname, './public/upload'))
-// }
 app.use(express.static(path.resolve(__dirname, './public/')));
 
 // Send reset password mail
-app.post('/reset-pass', (req, res) => {
-    User.findOne({email: req.body.email}, (err, user) => {
-        if(user){
-            var transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                  user: 'mevishal23@gmail.com',
-                  pass: 'kusumavishal'
-                }
-              });
+// app.post('/reset-pass', (req, res) => {
+//     User.findOne({email: req.body.email}, (err, user) => {
+//         if(user){
+//             var transporter = nodemailer.createTransport({
+//                 service: 'gmail',
+//                 auth: {
+//                   user: 'mevishal23@gmail.com',
+//                   pass: 'kusumavishal'
+//                 }
+//               });
               
-                const person = {
-                    id: user._id,
-                    username: user.name,
-                    email: user.email
-                }
-                jwt.sign({user: person}, 'secretkey', (err, token) => {
-                    var mailOptions = {
-                        from: '"Cook it abhi" <mevishal23@gmail.com>',
-                        to: req.body.email,
-                        subject: 'Password reset',
-                        html: `Hi ${user.name}, <br/><br/>You can reset your password using <b><a href='http://localhost:3000/reset-password?${token}'>password reset link</a></b>.<br/><br/>Thanks,<br/>Cookitabhi`,
+//                 const person = {
+//                     id: user._id,
+//                     username: user.name,
+//                     email: user.email
+//                 }
+//                 jwt.sign({user: person}, 'secretkey', (err, token) => {
+//                     var mailOptions = {
+//                         from: '"Cook it abhi" <mevishal23@gmail.com>',
+//                         to: req.body.email,
+//                         subject: 'Password reset',
+//                         html: `Hi ${user.name}, <br/><br/>You can reset your password using <b><a href='http://localhost:3000/reset-password?${token}'>password reset link</a></b>.<br/><br/>Thanks,<br/>Cookitabhi`,
                         
-                        };
+//                         };
                   
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if (error) {
-                          console.log(error);
-                        } else {
-                          console.log('Email sent: ' + info.response);
-                          res.json({status: 200, msg: `Email sent to ${req.body.email}`, token})
-                        }
-                      });
-                });
-        }
-        else {
-            res.json({status: 404, msg: 'Incorrect email ID'})
-        }
-    });
-});
+//                     transporter.sendMail(mailOptions, function(error, info){
+//                         if (error) {
+//                           console.log(error);
+//                         } else {
+//                           console.log('Email sent: ' + info.response);
+//                           res.json({status: 200, msg: `Email sent to ${req.body.email}`, token})
+//                         }
+//                       });
+//                 });
+//         }
+//         else {
+//             res.json({status: 404, msg: 'Incorrect email ID'})
+//         }
+//     });
+// });
 
-// // Get shops neerby user
+// Get shops neerby user
 dishRouter.route('/near').get((req, res)=> {
     User.find((err, resp)=> {
         if(err){
@@ -260,32 +257,31 @@ dishRouter.route('/users/:id').get((req, res) => {
 });
 
 // // Get stories
-dishRouter.route('/stories/:id').get((req, res) => {
-    let id = req.params.id;
-    var arr = [];
-    Story.find((err, stories) => {
-        if(err){
-            console.log(err);
-        }
-        else{
-            User.findById(id, (err, user) => {
-                let following = user && user.following && user.following.length ? user.following : [];
+// dishRouter.route('/stories/:id').get((req, res) => {
+//     let id = req.params.id;
+//     var arr = [];
+//     Story.find((err, stories) => {
+//         if(err){
+//             console.log(err);
+//         }
+//         else{
+//             User.findById(id, (err, user) => {
+//                 let following = user && user.following && user.following.length ? user.following : [];
                 
-                for(var i=0; i<stories.length; i++){
-                    if(following.indexOf(stories[i].user.id) !== -1 || following.indexOf(id) !== -1){
-                        arr.push(stories[i])
-                    }
-                }
-            })
-            // res.json({arr});
-            setTimeout(()=> {
-                res.json({arr})
-            }, 100)
-        }
-    });
-});
+//                 for(var i=0; i<stories.length; i++){
+//                     if(following.indexOf(stories[i].user.id) !== -1 || following.indexOf(id) !== -1){
+//                         arr.push(stories[i])
+//                     }
+//                 }
+//             })
+//             setTimeout(()=> {
+//                 res.json({arr})
+//             }, 100)
+//         }
+//     });
+// });
 
-// // Delete a story
+// Delete a story
 dishRouter.route('/delete-story/:id').get((req, res)=>{
     let id = req.params.id.toString();
     let query = {_id: id};
@@ -299,7 +295,7 @@ dishRouter.route('/delete-story/:id').get((req, res)=>{
 });
 
 
-// // Get blogs
+// Get blogs
 dishRouter.route('/blogs').get((req, res) => {
     Blog.find((err, blogs) => {
         if(err){
@@ -310,7 +306,7 @@ dishRouter.route('/blogs').get((req, res) => {
     });
 });
 
-// // Get products
+// Get products
 dishRouter.route('/products').get((req, res) => {
     Shopping.find((err, products) => {
         if(err) {
@@ -323,7 +319,7 @@ dishRouter.route('/products').get((req, res) => {
 })
 
 
-// // Get blogs of user
+// Get blogs of user
 dishRouter.route('/blogs/:id').get((req, res) => {
     Blog.find((err, blogs) => {
         if(err){
@@ -339,7 +335,7 @@ dishRouter.route('/blogs/:id').get((req, res) => {
     });
 });
 
-// // GET A DISH
+// GET A DISH
 dishRouter.route('/:id').get((req, res)=> {
     let id = req.params.id;
     Dish.findById(id, (err, dish)=> {
@@ -467,38 +463,38 @@ dishRouter.route('/user/:id').get(function(req, res){
 });
 
 // Get following list
-dishRouter.route('/following/:id').get(function(req, res) {
-    User.findById(req.params.id, function(err, user){
-        if(err) {
-            res.json(err);
-        }
-        else{
-            var arr = user.following || [];
-            var arr2 = user.followers || [];
-            var following=[];
-            var followers = [];
+// dishRouter.route('/following/:id').get(function(req, res) {
+//     User.findById(req.params.id, function(err, user){
+//         if(err) {
+//             res.json(err);
+//         }
+//         else{
+//             var arr = user.following || [];
+//             var arr2 = user.followers || [];
+//             var following=[];
+//             var followers = [];
 
 
-            for(var i=0; i<arr.length; i++){
-                    User.findById(arr[i], (err, followingList) => {
-                        if(followingList !== null){
-                            following.push({id: followingList._id, name: followingList.name, img: followingList.avatar});
-                        }
-                })                        
-            }
+//             for(var i=0; i<arr.length; i++){
+//                     User.findById(arr[i], (err, followingList) => {
+//                         if(followingList !== null){
+//                             following.push({id: followingList._id, name: followingList.name, img: followingList.avatar});
+//                         }
+//                 })                        
+//             }
 
-            for(var i=0; i<arr2.length; i++){
-                User.findById(arr2[i], (err, followerList) => {
-                    if(followerList !== null) 
-                    followers.push({id: followerList._id, name: followerList.name, img: followerList.avatar});    
-                })
-            }
-            setTimeout(() => {
-                res.json({following, followers})
-            }, 1000)
-        }
-    });
-});
+//             for(var i=0; i<arr2.length; i++){
+//                 User.findById(arr2[i], (err, followerList) => {
+//                     if(followerList !== null) 
+//                     followers.push({id: followerList._id, name: followerList.name, img: followerList.avatar});    
+//                 })
+//             }
+//             setTimeout(() => {
+//                 res.json({following, followers})
+//             }, 1000)
+//         }
+//     });
+// });
 
 
 
@@ -678,34 +674,21 @@ dishRouter.route('/post-blog').post((req, res)=> {
 //     });
 // });
 
-// function verifyToken(req, res, next){
-//     const bearerHeader = req.headers['authorised'];
-//     if(typeof bearerHeader !== 'undefined'){
-//         const bearer = bearerHeader.split(' ');
-//         const bearerToken = bearer[1];
-//         req.token = bearerToken;
+function verifyToken(req, res, next){
+    const bearerHeader = req.headers['authorised'];
+    if(typeof bearerHeader !== 'undefined'){
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
 
-//         next();
-//     }else {
-//         res.sendStatus(403);
-//     }
-// }
+        next();
+    }else {
+        res.sendStatus(403);
+    }
+}
 
-// dishRouter.route('/add').post((req, res)=> {
-//     let dish = new Dish(req.body);
-//     dish.save()
-//     .then(dish => {
-//         res.status(200).json({'dish': 'Dish added successfully'});
-//     })
-//     .catch(err => {
-//         res.status(400).send('Adding dish failed');
-//     });
-// });  
 
 app.use('/dishes', dishRouter);
-
-
-
 
 app.get('/', (req, res) => {
     res.send("Hello i'm here");
