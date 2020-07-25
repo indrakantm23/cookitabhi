@@ -4,33 +4,24 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const port = process.env.PORT || 5000;
 const mongoose = require('mongoose');
-// const dishRouter = express.Router();
-// const multer = require('multer');
-// const path = require('path');
-// const jwt = require('jsonwebtoken');
-// const passport = require('passport');
-// const flash = require('connect-flash');
-// const session = require('express-session');
-// const bcrypt = require('bcryptjs');
-// var nodemailer = require('nodemailer');
+const dishRouter = express.Router();
+const multer = require('multer');
+const path = require('path');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const flash = require('connect-flash');
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
+var nodemailer = require('nodemailer');
 
-// const users = require('./../components/users');
-// const products = require('./../components/products');
-// const dishData = require('./../components/dishes');
-
-// const faker = require('faker');
-// const download = require('image-downloader');
-
-
-
-// require('./Authentication/passport')(passport);
+require('./Authentication/passport')(passport);
 
 // IMPORTING MODEL
 const Dish = require('./model/dish.model');
-// const Blog = require('./model/blog.model');
-// const User = require('./model/user.model');
-// const Story = require('./model/story.model');
-// const Shopping = require('./model/shopping.model');
+const Blog = require('./model/blog.model');
+const User = require('./model/user.model');
+const Story = require('./model/story.model');
+const Shopping = require('./model/shopping.model');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -79,17 +70,17 @@ connection.once('open', ()=> {
 // })
 
 
-// const storage = multer.diskStorage({
-//     destination: './public/upload',
-//     filename: function(req, file, cb){
-//         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-//     }
-// });
+const storage = multer.diskStorage({
+    destination: './public/upload',
+    filename: function(req, file, cb){
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
 
 // initialize upload
-// const upload = multer({
-//     storage: storage
-// }).single('cook-it-abhi');
+const upload = multer({
+    storage: storage
+}).single('cook-it-abhi');
 
 // function checkFileType(file, cb){
 //     // allowed ext
@@ -105,16 +96,15 @@ connection.once('open', ()=> {
 //         cb('Error: Images Only');
 //     }
 // }
-// dishRouter.route('/').get((req, res)=> {
-//     console.log(req.body.i);
-//     Dish.find((err, dishes)=> {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             res.json(dishes);
-//         }
-//     });
-// });
+dishRouter.route('/').get((req, res)=> {
+    Dish.find((err, dishes)=> {
+        if(err){
+            console.log(err);
+        }else{
+            res.json(dishes);
+        }
+    });
+});
 
 
 // Send reset password mail
@@ -162,51 +152,51 @@ connection.once('open', ()=> {
 // })
 
 // // Get shops neerby user
-// dishRouter.route('/near').get((req, res)=> {
-//     User.find((err, resp)=> {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             // res.json(resp);
-//             let arr = [];
-//             for(let i=0; i<resp.length; i++){
-//                 if(resp[i].selectedLandmark != null){
-//                     arr.push(resp[i]);
-//                 }
-//             }
-//             res.json({arr})
-//         }
-//     });
-// });
+dishRouter.route('/near').get((req, res)=> {
+    User.find((err, resp)=> {
+        if(err){
+            console.log(err);
+        }else{
+            // res.json(resp);
+            let arr = [];
+            for(let i=0; i<resp.length; i++){
+                if(resp[i].selectedLandmark != null){
+                    arr.push(resp[i]);
+                }
+            }
+            res.json({arr})
+        }
+    });
+});
 
 // Search dish
-// dishRouter.route('/search/:search_key').get((req, res) => {
-//     let key = new RegExp(req.params.search_key, 'i');
-//     Dish.find((err, dishes) => {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             let arr = dishes.filter(a => {return a.dish.match(key)});
-//             let data = arr.map(a => { return {id: a._id, dish: a.dish} })
-//             res.json({data});
-//         }
-//     });
-// });
+dishRouter.route('/search/:search_key').get((req, res) => {
+    let key = new RegExp(req.params.search_key, 'i');
+    Dish.find((err, dishes) => {
+        if(err){
+            console.log(err);
+        }else{
+            let arr = dishes.filter(a => {return a.dish.match(key)});
+            let data = arr.map(a => { return {id: a._id, dish: a.dish} })
+            res.json({data});
+        }
+    });
+});
 
 
 // // Search product
-// dishRouter.route('/search/product/:search_key').get((req, res) => {
-//     let key = new RegExp(req.params.search_key, 'i');
-//     Shopping.find((err, product) => {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             let arr = product.filter(a => {return a.product.match(key)});
-//             let data = arr.map(a => { return {id: a._id, product: a.product} })
-//             res.json({data});
-//         }
-//     });
-// });
+dishRouter.route('/search/product/:search_key').get((req, res) => {
+    let key = new RegExp(req.params.search_key, 'i');
+    Shopping.find((err, product) => {
+        if(err){
+            console.log(err);
+        }else{
+            let arr = product.filter(a => {return a.product.match(key)});
+            let data = arr.map(a => { return {id: a._id, product: a.product} })
+            res.json({data});
+        }
+    });
+});
 
 
 
@@ -249,23 +239,23 @@ connection.once('open', ()=> {
 // })
 
 // Get users
-// dishRouter.route('/users/:id').get((req, res) => {
-//     let myId = req.params.id;
-//     User.find((err, users) => {
-//         if(err){
-//             console.log(err);
-//         }
-//         else{
-//             User.findById(req.params.id, (err, user) => {
-//                 let arr = user.following || [];
-//                 let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
-//                 data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
-//                 res.json({data});
+dishRouter.route('/users/:id').get((req, res) => {
+    let myId = req.params.id;
+    User.find((err, users) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findById(req.params.id, (err, user) => {
+                let arr = user.following || [];
+                let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
+                data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
+                res.json({data});
                 
-//             })
-//         }
-//     });
-// });
+            })
+        }
+    });
+});
 
 // // Get stories
 // dishRouter.route('/stories/:id').get((req, res) => {
@@ -308,27 +298,27 @@ connection.once('open', ()=> {
 
 
 // // Get blogs
-// dishRouter.route('/blogs').get((req, res) => {
-//     Blog.find((err, blogs) => {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             res.json(blogs.slice(0).reverse());
-//         }
-//     });
-// });
+dishRouter.route('/blogs').get((req, res) => {
+    Blog.find((err, blogs) => {
+        if(err){
+            console.log(err);
+        }else{
+            res.json(blogs.slice(0).reverse());
+        }
+    });
+});
 
 // // Get products
-// dishRouter.route('/products').get((req, res) => {
-//     Shopping.find((err, products) => {
-//         if(err) {
-//             console.log(err);
-//         }
-//         else{
-//             res.json({products});
-//         }
-//     })
-// })
+dishRouter.route('/products').get((req, res) => {
+    Shopping.find((err, products) => {
+        if(err) {
+            console.log(err);
+        }
+        else{
+            res.json({products});
+        }
+    })
+})
 
 
 // // Get blogs of user
@@ -712,7 +702,7 @@ connection.once('open', ()=> {
 //     });
 // });  
 
-// app.use('/dishes', dishRouter);
+app.use('/dishes', dishRouter);
 
 // INSERT FAKE USERS
 
@@ -742,13 +732,7 @@ connection.once('open', ()=> {
 app.get('/', (req, res) => {
 
 console.log('Hello in console, Indrakant');
-        Dish.find((err, dishes)=> {
-        if(err){
-            console.log(err);
-        }else{
-            res.json(dishes);
-        }
-    });
+        res.send("Hello i'm here");
 })
 
 // if(process.env.NODE_ENV === 'production') {
