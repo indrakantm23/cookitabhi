@@ -26,7 +26,7 @@ const mongoose = require('mongoose');
 // require('./Authentication/passport')(passport);
 
 // IMPORTING MODEL
-// const Dish = require('./model/dish.model');
+const Dish = require('./model/dish.model');
 // const Blog = require('./model/blog.model');
 // const User = require('./model/user.model');
 // const Story = require('./model/story.model');
@@ -741,8 +741,14 @@ connection.once('open', ()=> {
 // INSERT SCRAPE IMAGE
 app.get('/', (req, res) => {
 
-res.send('Hello Indrakant');
 console.log('Hello in console, Indrakant');
+        Dish.find((err, dishes)=> {
+        if(err){
+            console.log(err);
+        }else{
+            res.json(dishes);
+        }
+    });
 })
 
 // if(process.env.NODE_ENV === 'production') {
