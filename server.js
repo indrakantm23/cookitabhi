@@ -237,48 +237,48 @@ dishRouter.route('/get/product/:id').get((req, res) =>{
 })
 
 // Get users
-// dishRouter.route('/users/:id').get((req, res) => {
-//     let myId = req.params.id;
-//     User.find((err, users) => {
-//         if(err){
-//             console.log(err);
-//         }
-//         else{
-//             User.findById(req.params.id, (err, user) => {
-//                 let arr = user.following || [];
-//                 let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
-//                 data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
-//                 res.json({data});
+dishRouter.route('/users/:id').get((req, res) => {
+    let myId = req.params.id;
+    User.find((err, users) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findById(req.params.id, (err, user) => {
+                let arr = user.following || [];
+                let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
+                data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
+                res.json({data});
                 
-//             });
-//         }
-//     });
-// });
+            });
+        }
+    });
+});
 
-// // Get stories
-// dishRouter.route('/stories/:id').get((req, res) => {
-//     let id = req.params.id;
-//     var arr = [];
-//     Story.find((err, stories) => {
-//         if(err){
-//             console.log(err);
-//         }
-//         else{
-//             User.findById(id, (err, user) => {
-//                 let following = user && user.following && user.following.length ? user.following : [];
+// Get stories
+dishRouter.route('/stories/:id').get((req, res) => {
+    let id = req.params.id;
+    var arr = [];
+    Story.find((err, stories) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findById(id, (err, user) => {
+                let following = user && user.following && user.following.length ? user.following : [];
                 
-//                 for(var i=0; i<stories.length; i++){
-//                     if(following.indexOf(stories[i].user.id) !== -1 || following.indexOf(id) !== -1){
-//                         arr.push(stories[i])
-//                     }
-//                 }
-//             })
-//             setTimeout(()=> {
-//                 res.json({arr})
-//             }, 100)
-//         }
-//     });
-// });
+                for(var i=0; i<stories.length; i++){
+                    if(following.indexOf(stories[i].user.id) !== -1 || following.indexOf(id) !== -1){
+                        arr.push(stories[i])
+                    }
+                }
+            })
+            setTimeout(()=> {
+                res.json({arr})
+            }, 100)
+        }
+    });
+});
 
 // Delete a story
 dishRouter.route('/delete-story/:id').get((req, res)=>{
@@ -462,38 +462,38 @@ dishRouter.route('/user/:id').get(function(req, res){
 });
 
 // Get following list
-// dishRouter.route('/following/:id').get(function(req, res) {
-//     User.findById(req.params.id, function(err, user){
-//         if(err) {
-//             res.json(err);
-//         }
-//         else{
-//             var arr = user.following || [];
-//             var arr2 = user.followers || [];
-//             var following=[];
-//             var followers = [];
+dishRouter.route('/following/:id').get(function(req, res) {
+    User.findById(req.params.id, function(err, user){
+        if(err) {
+            res.json(err);
+        }
+        else{
+            var arr = user.following || [];
+            var arr2 = user.followers || [];
+            var following=[];
+            var followers = [];
 
 
-//             for(var i=0; i<arr.length; i++){
-//                     User.findById(arr[i], (err, followingList) => {
-//                         if(followingList !== null){
-//                             following.push({id: followingList._id, name: followingList.name, img: followingList.avatar});
-//                         }
-//                 })                        
-//             }
+            for(var i=0; i<arr.length; i++){
+                    User.findById(arr[i], (err, followingList) => {
+                        if(followingList !== null){
+                            following.push({id: followingList._id, name: followingList.name, img: followingList.avatar});
+                        }
+                })                        
+            }
 
-//             for(var i=0; i<arr2.length; i++){
-//                 User.findById(arr2[i], (err, followerList) => {
-//                     if(followerList !== null) 
-//                     followers.push({id: followerList._id, name: followerList.name, img: followerList.avatar});    
-//                 })
-//             }
-//             setTimeout(() => {
-//                 res.json({following, followers})
-//             }, 1000)
-//         }
-//     });
-// });
+            for(var i=0; i<arr2.length; i++){
+                User.findById(arr2[i], (err, followerList) => {
+                    if(followerList !== null) 
+                    followers.push({id: followerList._id, name: followerList.name, img: followerList.avatar});    
+                })
+            }
+            setTimeout(() => {
+                res.json({following, followers})
+            }, 1000)
+        }
+    });
+});
 
 
 
@@ -508,15 +508,6 @@ dishRouter.get('/liked-blogs/:id', (req, res) => {
 });
 
 
-
-
-
-
-    // Pushing into user array
-    // User.findById(uid, function(err, user){
-    //     user.liked_blogs.push("5edb7ff49819033abcdd182e");
-    //     user.save(done);
-    // });
 
 
 // app.use(express.static('./public'));
