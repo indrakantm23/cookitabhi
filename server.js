@@ -70,99 +70,102 @@ app.use((req, res, next) => {
 })
 
 
-// const storage = multer.diskStorage({
-//     destination: './public/upload',
-//     filename: function(req, file, cb){
-//         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-//     }
-// });
+const storage = multer.diskStorage({
+    destination: './public/upload',
+    filename: function(req, file, cb){
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
 
 // initialize upload
-// const upload = multer({
-//     storage: storage
-// }).single('cook-it-abhi');
+const upload = multer({
+    storage: storage
+}).single('cook-it-abhi');
 
-// function checkFileType(file, cb){
-//     const filetypes = /jpeg|jpg|png|gif/;
-//     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//     const mimetype = filetypes.test(file.mimetype);
-//     if(mimetype && extname){
-//         return cb(null, true);
-//     }else {
-//         cb('Error: Images Only');
-//     }
-// }
-// dishRouter.route('/').get((req, res)=> {
-//     Dish.find((err, dishes)=> {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             res.json(dishes);
-//         }
-//     });
-// });
+function checkFileType(file, cb){
+    const filetypes = /jpeg|jpg|png|gif/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if(mimetype && extname){
+        return cb(null, true);
+    }else {
+        cb('Error: Images Only');
+    }
+}
+
+
+// Get dishes
+dishRouter.route('/').get((req, res)=> {
+    Dish.find((err, dishes)=> {
+        if(err){
+            console.log(err);
+        }else{
+            res.json(dishes);
+        }
+    });
+});
 
 app.use(express.static(path.resolve(__dirname, './public/')));
 
 // Send reset password mail
-// app.post('/reset-pass', (req, res) => {
-//     User.findOne({email: req.body.email}, (err, user) => {
-//         if(user){
-//             var transporter = nodemailer.createTransport({
-//                 service: 'gmail',
-//                 auth: {
-//                   user: 'mevishal23@gmail.com',
-//                   pass: 'kusumavishal'
-//                 }
-//               });
+app.post('/reset-pass', (req, res) => {
+    User.findOne({email: req.body.email}, (err, user) => {
+        if(user){
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                  user: 'mevishal23@gmail.com',
+                  pass: 'kusumavishal'
+                }
+              });
               
-//                 const person = {
-//                     id: user._id,
-//                     username: user.name,
-//                     email: user.email
-//                 }
-//                 jwt.sign({user: person}, 'secretkey', (err, token) => {
-//                     var mailOptions = {
-//                         from: '"Cook it abhi" <mevishal23@gmail.com>',
-//                         to: req.body.email,
-//                         subject: 'Password reset',
-//                         html: `Hi ${user.name}, <br/><br/>You can reset your password using <b><a href='http://localhost:3000/reset-password?${token}'>password reset link</a></b>.<br/><br/>Thanks,<br/>Cookitabhi`,
+                const person = {
+                    id: user._id,
+                    username: user.name,
+                    email: user.email
+                }
+                jwt.sign({user: person}, 'secretkey', (err, token) => {
+                    var mailOptions = {
+                        from: '"Cook it abhi" <mevishal23@gmail.com>',
+                        to: req.body.email,
+                        subject: 'Password reset',
+                        html: `Hi ${user.name}, <br/><br/>You can reset your password using <b><a href='http://localhost:3000/reset-password?${token}'>password reset link</a></b>.<br/><br/>Thanks,<br/>Cookitabhi`,
                         
-//                         };
+                        };
                   
-//                     transporter.sendMail(mailOptions, function(error, info){
-//                         if (error) {
-//                           console.log(error);
-//                         } else {
-//                           console.log('Email sent: ' + info.response);
-//                           res.json({status: 200, msg: `Email sent to ${req.body.email}`, token})
-//                         }
-//                       });
-//                 });
-//         }
-//         else {
-//             res.json({status: 404, msg: 'Incorrect email ID'})
-//         }
-//     });
-// });
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                          console.log(error);
+                        } else {
+                          console.log('Email sent: ' + info.response);
+                          res.json({status: 200, msg: `Email sent to ${req.body.email}`, token})
+                        }
+                      });
+                });
+        }
+        else {
+            res.json({status: 404, msg: 'Incorrect email ID'})
+        }
+    });
+});
 
 // Get shops neerby user
-// dishRouter.route('/near').get((req, res)=> {
-//     User.find((err, resp)=> {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             // res.json(resp);
-//             let arr = [];
-//             for(let i=0; i<resp.length; i++){
-//                 if(resp[i].selectedLandmark != null){
-//                     arr.push(resp[i]);
-//                 }
-//             }
-//             res.json({arr})
-//         }
-//     });
-// });
+dishRouter.route('/near').get((req, res)=> {
+    User.find((err, resp)=> {
+        if(err){
+            console.log(err);
+        }else{
+            // res.json(resp);
+            let arr = [];
+            for(let i=0; i<resp.length; i++){
+                if(resp[i].selectedLandmark != null){
+                    arr.push(resp[i]);
+                }
+            }
+            res.json({arr})
+        }
+    });
+});
 
 // Search dish
 dishRouter.route('/search/:search_key').get((req, res) => {
