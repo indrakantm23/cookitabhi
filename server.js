@@ -106,6 +106,10 @@ dishRouter.route('/').get((req, res)=> {
     });
 });
 
+destination: function (req, file, cb) {
+     cb(null, path.resolve(__dirname, './public/upload'))
+}
+
 
 // Send reset password mail
 // app.post('/reset-pass', (req, res) => {
