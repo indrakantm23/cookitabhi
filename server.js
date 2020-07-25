@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const port = process.env.PORT || 5000;
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 // const dishRouter = express.Router();
 // const multer = require('multer');
 // const path = require('path');
@@ -39,12 +39,12 @@ app.use(bodyParser.json());
 
 // mongodb://127.0.0.1:27017/cookitabhi
 // process.env.MONGODB_URI || 
-// mongoose.connect('mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mongodb.net/cookitabhi?retryWrites=true&w=majority', { useNewUrlParser: true });
-// const connection = mongoose.connection;
+mongoose.connect('mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mongodb.net/cookitabhi?retryWrites=true&w=majority', { useNewUrlParser: true });
+const connection = mongoose.connection;
 
-// connection.once('open', ()=> {
-//     console.log('MongoDB is connected');
-// }); 
+connection.once('open', ()=> {
+    console.log('MongoDB is connected');
+}); 
 
 
 // For Production
@@ -742,43 +742,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
 
 res.send('Hello Indrakant');
-
-
-    // INSERT PRODUCT DATA 
-    // for(let i=0; i<products.length; i++){
-    //     let prod = new Shopping(products[i]);
-    // prod.save()
-    //     .then(prod => {
-    //         res.status(200).json({prod: 'product added successfully'});
-    //     })
-    //     .catch(err => {
-    //         res.status(400).send('adding producy failed');
-    //     });
-    // }
-
-    // for(let i=0; i<dishData.length; i++){
-        // let dish = new Dish(dishData[i]);
-        // dish.save()
-        //     .then(dish => {
-        //         res.status(200).json({dish: 'dish added successfully'});
-        //     })
-        //     .catch(err => {
-        //         res.status(400).send('adding dish failed');
-        //     });
-    // }
-
-    // CHANGES IMAGE NAME AND SAVING INTO FOLDER
-    // for(let i=0; i<products.length; i++){
-    //     const options = {   
-    //         url: products[i].img,
-    //         dest: `public/upload/${i}oil.jpg`
-    //     }
-    //     download.image(options)
-    //     .then(({filename}) => {
-    //         products[i].img=`upload/${i}oil.jpg`;
-    //     })
-    //     .catch((err) => console.error(err));                
-    // }
+console.log('Hello in console, Indrakant');
 })
 
 // if(process.env.NODE_ENV === 'production') {
