@@ -114,6 +114,7 @@ app.post('/reset-pass', (req, res) => {
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
+                  type: 'OAuth2',
                   user: 'mevishal23@gmail.com',
                   pass: 'kusumavishal'
                 }
