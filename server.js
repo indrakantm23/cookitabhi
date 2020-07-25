@@ -274,12 +274,14 @@ dishRouter.route('/stories/:id').get((req, res) => {
                     }
                 }
             })
+            // res.json({arr});
             setTimeout(()=> {
                 res.json({arr})
-            }, 100)
+            }, 500)
         }
     });
 });
+
 
 // Delete a story
 dishRouter.route('/delete-story/:id').get((req, res)=>{
