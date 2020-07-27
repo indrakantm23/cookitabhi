@@ -134,6 +134,7 @@ app.post('/reset-pass', (req, res) => {
                         
                         };
                   
+                                    try{
                     transporter.sendMail(mailOptions, function(error, info){
                         if (error) {
                           console.log(error);
@@ -142,6 +143,11 @@ app.post('/reset-pass', (req, res) => {
                           res.json({status: 200, msg: `Email sent to ${req.body.email}`, token})
                         }
                       });
+                    }
+                    catch(err){
+                        res.json('Error in sending email: '+ err)
+                    }
+                    })
                 });
         }
         else {
