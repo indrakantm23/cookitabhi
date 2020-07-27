@@ -114,7 +114,6 @@ app.post('/reset-pass', (req, res) => {
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
-                  type: 'OAuth2',
                   user: 'mevishal23@gmail.com',
                   pass: 'kusumavishal'
                 }
@@ -134,7 +133,6 @@ app.post('/reset-pass', (req, res) => {
                         
                         };
                   
-                                    try{
                     transporter.sendMail(mailOptions, function(error, info){
                         if (error) {
                           console.log(error);
@@ -143,12 +141,9 @@ app.post('/reset-pass', (req, res) => {
                           res.json({status: 200, msg: `Email sent to ${req.body.email}`, token})
                         }
                       });
-                    }
-                    catch(err){
-                        res.json('Error in sending email: '+ err)
-                    }
-                    })
-                });
+                })
+
+
         }
         else {
             res.json({status: 404, msg: 'Incorrect email ID'})
