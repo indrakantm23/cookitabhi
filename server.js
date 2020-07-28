@@ -206,6 +206,7 @@ dishRouter.route('/notify/:id').post((req, res) => {
 
 // Get notifications
 dishRouter.route('/get-notifications/:id').get((req, res) => {
+    res.send('Searching user');
     User.findById(req.params.id, (err, user) => {
         if(err){
             res.json(err);
@@ -213,6 +214,7 @@ dishRouter.route('/get-notifications/:id').get((req, res) => {
             res.json(user.notifications);
         }
     });
+    res.send('Searching user end');
 });
 
 
