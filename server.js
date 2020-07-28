@@ -184,6 +184,38 @@ dishRouter.route('/search/:search_key').get((req, res) => {
 });
 
 
+
+// Push notifications
+dishRouter.route('/notify/:id').post((req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if(err){
+            res.json(err)
+        }
+        else{
+            if(user !== null){
+                user.notifications.push(req.body.data);
+                user.save();
+                res.json({status: 200, data_pushed: true})
+            }else{
+                res.json({err: 'User is null'})
+            }
+        }
+    });
+});
+
+
+// Get notifications
+dishRouter.route('/get-notifications/:id').get((req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if(err){
+            res.json(err);
+        }else{
+            res.json(user.notifications);
+        }
+    });
+});
+
+
 // // Search product
 dishRouter.route('/search/product/:search_key').get((req, res) => {
     let key = new RegExp(req.params.search_key, 'i');
