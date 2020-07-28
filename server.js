@@ -214,7 +214,6 @@ dishRouter.route('/get-notifications/:id').get((req, res) => {
             res.json(user.notifications);
         }
     });
-    res.send('Searching user end');
 });
 
 
