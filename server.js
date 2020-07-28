@@ -206,12 +206,15 @@ dishRouter.route('/notify/:id').post((req, res) => {
 
 // Get notifications
 dishRouter.route('/get-notifications/:id').get((req, res) => {
-    res.send('Searching user');
     User.findById(req.params.id, (err, user) => {
         if(err){
             res.json(err);
         }else{
-            res.json(user.notifications);
+            if(user && user.notifications !== null){
+                res.json(user.notifications);
+            }else{
+                res.json({err: 'No notifications found'});
+            }
         }
     });
 });
