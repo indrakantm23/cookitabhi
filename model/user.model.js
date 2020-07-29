@@ -53,6 +53,9 @@ const User = new mongoose.Schema({
     },
     shoppingCart: {
         type: Array
+    },
+    notifications: {
+        type: Array
     }
 });
 

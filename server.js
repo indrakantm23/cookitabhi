@@ -493,9 +493,6 @@ dishRouter.route('/notify/:id').post((req, res) => {
 });
 
 
-
-
-
 // Get notifications
 dishRouter.route('/get-notifications/:id').get((req, res) => {
     User.findById(req.params.id, (err, user) => {
@@ -776,9 +773,7 @@ app.use('/dishes', dishRouter);
 //       }
 // })
 
-app.get('/notification', (req, res) => {
-    res.json({msg: 'Hello indrakant'});
-})
+
 
 
 // INSERT SCRAPE IMAGE
