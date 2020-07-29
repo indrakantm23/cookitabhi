@@ -493,6 +493,11 @@ dishRouter.route('/notify/:id').post((req, res) => {
 });
 
 
+dishRouter.route('/notification').get((req, res) => {
+    res.send('Notifications');
+})
+
+
 // Get notifications
 dishRouter.route('/get-notifications/:id').get((req, res) => {
     User.findById(req.params.id, (err, user) => {
