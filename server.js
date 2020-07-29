@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 const mongoose = require('mongoose');
 const dishRouter = express.Router();
 const multer = require('multer');
@@ -493,9 +493,7 @@ dishRouter.route('/notify/:id').post((req, res) => {
 });
 
 
-dishRouter.route('/notification').get((req, res) => {
-    res.send('Notifications');
-})
+
 
 
 // Get notifications
@@ -778,7 +776,9 @@ app.use('/dishes', dishRouter);
 //       }
 // })
 
-
+app.get('/notification', (req, res) => {
+    res.json({msg: 'Hello indrakant'});
+})
 
 
 // INSERT SCRAPE IMAGE
