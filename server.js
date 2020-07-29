@@ -14,6 +14,15 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 var nodemailer = require('nodemailer');
 
+// const users = require('./../components/users');
+// const products = require('./../components/products');
+// const dishData = require('./../components/dishes');
+
+const faker = require('faker');
+const download = require('image-downloader');
+
+
+
 require('./Authentication/passport')(passport);
 
 // IMPORTING MODEL
@@ -26,11 +35,19 @@ const Shopping = require('./model/shopping.model');
 app.use(cors());
 app.use(bodyParser.json());
 
+
+// app.use(express.static(path.join(__dirname, 'build')));
+
+
+// app.get('/*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
+
 // mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mongodb.net/cookitabhi?retryWrites=true&w=majority
 
 // mongodb://127.0.0.1:27017/cookitabhi
-// process.env.db || 
-mongoose.connect(process.env.db, { useNewUrlParser: true });
+// process.env.MONGODB_URI || 
+mongoose.connect('mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mongodb.net/cookitabhi?retryWrites=true&w=majority', { useNewUrlParser: true,  useUnifiedTopology: true });
 const connection = mongoose.connection;
 
 connection.once('open', ()=> {
@@ -83,19 +100,21 @@ const upload = multer({
 }).single('cook-it-abhi');
 
 function checkFileType(file, cb){
+    // allowed ext
     const filetypes = /jpeg|jpg|png|gif/;
+    // check ext
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // check mime
     const mimetype = filetypes.test(file.mimetype);
+
     if(mimetype && extname){
         return cb(null, true);
     }else {
         cb('Error: Images Only');
     }
 }
-
-
-// Get dishes
 dishRouter.route('/').get((req, res)=> {
+    console.log(req.body.i);
     Dish.find((err, dishes)=> {
         if(err){
             console.log(err);
@@ -105,7 +124,6 @@ dishRouter.route('/').get((req, res)=> {
     });
 });
 
-app.use(express.static(path.resolve(__dirname, './public/')));
 
 // Send reset password mail
 app.post('/reset-pass', (req, res) => {
@@ -184,43 +202,7 @@ dishRouter.route('/search/:search_key').get((req, res) => {
 });
 
 
-
-// Push notifications
-dishRouter.route('/notify/:id').post((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if(err){
-            res.json(err)
-        }
-        else{
-            if(user !== null){
-                user.notifications.push(req.body.data);
-                user.save();
-                res.json({status: 200, data_pushed: true})
-            }else{
-                res.json({err: 'User is null'})
-            }
-        }
-    });
-});
-
-
-// Get notifications
-dishRouter.route('/get-notifications/:id').get((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if(err){
-            res.json(err);
-        }else{
-            if(user && user.notifications !== null){
-                res.json(user.notifications);
-            }else{
-                res.json({err: 'No notifications found'});
-            }
-        }
-    });
-});
-
-
-// // Search product
+// Search product
 dishRouter.route('/search/product/:search_key').get((req, res) => {
     let key = new RegExp(req.params.search_key, 'i');
     Shopping.find((err, product) => {
@@ -236,7 +218,7 @@ dishRouter.route('/search/product/:search_key').get((req, res) => {
 
 
 
-// // ADD PRODUCT INTO CART
+// ADD PRODUCT INTO CART
 dishRouter.route('/add/product/:id').post((req, res) => {
     let data = req.body.data;
     User.findById(req.params.id, (err, user) => {
@@ -247,7 +229,7 @@ dishRouter.route('/add/product/:id').post((req, res) => {
 });
 
 
-// // Add quantity of product
+// Add quantity of product
 dishRouter.route('/add/quantity/:id').post((req, res) => {
     let id = req.body.id;
     User.findById(req.params.id, (err, user) => {
@@ -257,7 +239,7 @@ dishRouter.route('/add/quantity/:id').post((req, res) => {
     });
 });
 
-// // Reduce quantity of product
+// Reduce quantity of product
 dishRouter.route('/reduce/quantity/:id').post((req, res) => {
     let id = req.body.id;
     User.findById(req.params.id, (err, user) => {
@@ -288,7 +270,7 @@ dishRouter.route('/users/:id').get((req, res) => {
                 data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
                 res.json({data});
                 
-            });
+            })
         }
     });
 });
@@ -314,11 +296,10 @@ dishRouter.route('/stories/:id').get((req, res) => {
             // res.json({arr});
             setTimeout(()=> {
                 res.json({arr})
-            }, 500)
+            }, 100)
         }
     });
 });
-
 
 // Delete a story
 dishRouter.route('/delete-story/:id').get((req, res)=>{
@@ -493,6 +474,37 @@ dishRouter.route('/delete-comment/:id').post((req, res)=>{
 });
 
 
+// Push notifications
+dishRouter.route('/notify/:id').post((req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if(err){
+            res.json(err)
+        }
+        else{
+            if(user !== null){
+                user.notifications.push(req.body.data);
+                user.save();
+                res.json({status: 200, data_pushed: true})
+            }else{
+                res.json({err: 'User is null'})
+            }
+        }
+    });
+});
+
+
+// Get notifications
+dishRouter.route('/get-notifications/:id').get((req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if(err){
+            res.json(err);
+        }else{
+            res.json(user.notifications);
+        }
+    });
+});
+
+
 dishRouter.route('/user/:id').get(function(req, res){
     User.findById(req.params.id, function(err, user) {
         if(err) res.json(err)
@@ -503,6 +515,7 @@ dishRouter.route('/user/:id').get(function(req, res){
 
 // Get following list
 dishRouter.route('/following/:id').get(function(req, res) {
+    
     User.findById(req.params.id, function(err, user){
         if(err) {
             res.json(err);
@@ -542,7 +555,7 @@ dishRouter.get('/liked-blogs/:id', (req, res) => {
   User.findById(req.params.id, function(err, user){
       if(err) res.json({err : 'Something went wrong'})
       else
-      res.json({liked_blogs: user.liked_blogs, following: user.following})
+      res.json({liked_blogs: user.liked_blogs ?  user.liked_blogs : [], following: user.following ? user.following : []})
     // console.log(user)
   });  
 });
@@ -550,7 +563,16 @@ dishRouter.get('/liked-blogs/:id', (req, res) => {
 
 
 
-// app.use(express.static('./public'));
+
+
+    // Pushing into user array
+    // User.findById(uid, function(err, user){
+    //     user.liked_blogs.push("5edb7ff49819033abcdd182e");
+    //     user.save(done);
+    // });
+
+
+app.use(express.static('./public'));
 
 app.post('/upload', (req, res)=> {
     upload(req, res, (err) => {
@@ -633,11 +655,11 @@ dishRouter.route('/change-password').post((req, res) => {
                     .catch(err => {
                         res.status(400).send('Failed updating password');
                     });
-                });
-            });
+                })
+            })
         }
-    });
-});
+    })
+})
 
 // Login
 dishRouter.post('/login', (req, res, next) => {
@@ -717,15 +739,86 @@ function verifyToken(req, res, next){
     }
 }
 
+// dishRouter.route('/add').post((req, res)=> {
+//     let dish = new Dish(req.body);
+//     dish.save()
+//     .then(dish => {
+//         res.status(200).json({'dish': 'Dish added successfully'});
+//     })
+//     .catch(err => {
+//         res.status(400).send('Adding dish failed');
+//     });
+// });  
 
 app.use('/dishes', dishRouter);
 
-app.get('/', (req, res) => {
-    res.send("Hello i'm here");
-});
+// INSERT FAKE USERS
+
+// app.get('/', (req, res) => {
+//       for(let i=0; i<users.length; i++){
+//         let user = new User(users[i]);
+//         bcrypt.genSalt(10, (err, salt) => {
+//             bcrypt.hash(user.password, salt, (err, hash) => {
+//                 if(err) throw err;
+//                 user.password = hash;
+//                 user.save()
+//                 .then(user => {
+//                     res.status(200).json({user: 'User created successfully'});
+//                 })
+//                 .catch(err => {
+//                     res.status(400).send('Failed creating user');
+//                 });
+//             })
+//         })
+//       }
+// })
+
+
+
+
+// INSERT SCRAPE IMAGE
+// app.get('/', (req, res) => {
+
+    // INSERT PRODUCT DATA 
+    // for(let i=0; i<products.length; i++){
+    //     let prod = new Shopping(products[i]);
+    // prod.save()
+    //     .then(prod => {
+    //         res.status(200).json({prod: 'product added successfully'});
+    //     })
+    //     .catch(err => {
+    //         res.status(400).send('adding producy failed');
+    //     });
+    // }
+
+    // for(let i=0; i<dishData.length; i++){
+        // let dish = new Dish(dishData[i]);
+        // dish.save()
+        //     .then(dish => {
+        //         res.status(200).json({dish: 'dish added successfully'});
+        //     })
+        //     .catch(err => {
+        //         res.status(400).send('adding dish failed');
+        //     });
+    // }
+
+    // CHANGES IMAGE NAME AND SAVING INTO FOLDER
+    // for(let i=0; i<products.length; i++){
+    //     const options = {   
+    //         url: products[i].img,
+    //         dest: `public/upload/${i}oil.jpg`
+    //     }
+    //     download.image(options)
+    //     .then(({filename}) => {
+    //         products[i].img=`upload/${i}oil.jpg`;
+    //     })
+    //     .catch((err) => console.error(err));                
+    // }
+// })
 
 // if(process.env.NODE_ENV === 'production') {
 //     app.use(express.static('../client/build'));
 // }
+
 
 app.listen(port, () => console.log(`Server is listening at http://localhost:${port}`))
