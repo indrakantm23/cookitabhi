@@ -14,6 +14,8 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 var nodemailer = require('nodemailer');
 
+// const io = require('socket.io')
+
 // const users = require('./../components/users');
 // const products = require('./../components/products');
 // const dishData = require('./../components/dishes');
@@ -113,16 +115,27 @@ function checkFileType(file, cb){
         cb('Error: Images Only');
     }
 }
+// dishRouter.route('/').get((req, res)=> {
+//     Dish.find((err, dishes) => {
+//         if(err){
+//             res.json(err);
+//         }else{
+//             res.json(dishes);
+//         }
+//     });
+// });
+
 dishRouter.route('/').get((req, res)=> {
-    console.log(req.body.i);
-    Dish.find((err, dishes)=> {
+    let data = Dish.find().limit(10).skip(1)
+    data.exec((err, dishes) => {
         if(err){
-            console.log(err);
+            res.json(err)
         }else{
-            res.json(dishes);
+            res.json(dishes)
         }
-    });
+    })
 });
+
 
 
 // Send reset password mail
@@ -819,6 +832,74 @@ app.use('/dishes', dishRouter);
 // if(process.env.NODE_ENV === 'production') {
 //     app.use(express.static('../client/build'));
 // }
+
+app.get('/',(req,res) => {
+    return res.send('I am listening');
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//PAGINATED API
+http://localhost:5000/users?page=2&limit=5
+
+// app.get('/posts', paginatedResults(posts), (req, res) => {
+// 	res.json(res.paginatedResults)
+// });
+
+app.get('/newdishes', paginatedResults(Dish), (req, res) => {
+	res.json(res.paginatedResults)
+});
+
+function paginatedResults(model){
+	
+	return async(req, res, next) => {
+		const page = parseInt(req.query.page)
+		const limit = parseInt(req.query.limit)
+		const startIndex = (page - 1) * limit
+		const endIndex = page * limit
+
+		const results = {}
+
+		if(endIndex < await model.countDocuments().exec()){
+			results.next={
+			page: page+1,
+			limit: limit
+		}
+	}
+
+		if(startIndex > 0){
+			results.previous={
+			page: page-1,
+			limit: limit
+		}
+	}
+
+		try{
+			results.results = await model.find().limit(limit).skip(startIndex).exec();
+			res.paginatedResults = results;
+			next()
+	}
+	catch(e){
+	res.status(500).json({ message: e.message })
+}
+}
+
+}
+
+
+
 
 
 app.listen(port, () => console.log(`Server is listening at http://localhost:${port}`))
