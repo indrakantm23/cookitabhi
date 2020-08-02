@@ -376,6 +376,20 @@ dishRouter.route('/:id').get((req, res)=> {
     });
 });
 
+// GET A USER
+dishRouter.route('/user/:id').get((req, res)=> {
+    let id = req.params.id;
+    User.findById(id, (err, data)=> {
+        if(err){
+            res.json(err);
+        }else{
+            let user = [];
+            user.push({name: data.name, avatar: data.avatar, business_type: data.business_type, chef: data.chef, email: data.email, followers: data.followers.length, following: data.following.length, runs_business: data.runs_business});
+            res.json(user)
+        }
+    });
+});
+
 // GET A Product
 dishRouter.route('/item/:id').get((req, res)=> {
     let id = req.params.id;
