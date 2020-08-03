@@ -864,7 +864,28 @@ app.get('/',(req,res) => {
 
 
 
+// CHECK EMAIL
+app.get('/check-email/:email', (req, res) => {
+    User.findOne({ email: req.params.email }).then(user => {
+        if(user) {
+            res.json({msg: `User already exist with ${req.params.email}`, userExist: true })
+        }else{
+            res.json({msg: `${req.params.email} is available`, userExist: false})
+        }
+    });
+});
 
+
+// CHECK USERNAME
+app.get('/check-username/:username', (req, res) => {
+    User.findOne({ username: req.params.username }).then(user => {
+        if(user) {
+            res.json({msg: `User already exist with ${req.params.username}`, userExist: true })
+        }else{
+            res.json({msg: `${req.params.username} is available`, userExist: false})
+        }
+    });
+});
 
 
 
@@ -922,6 +943,8 @@ function paginatedResults(model){
 }
 
 }
+
+
 
 
 
