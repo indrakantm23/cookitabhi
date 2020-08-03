@@ -126,7 +126,8 @@ function checkFileType(file, cb){
 // });
 
 dishRouter.route('/').get((req, res)=> {
-    let data = Dish.find().limit(10).skip(1)
+    const page = parseInt(req.query.skip_page)
+    let data = Dish.find().limit(10).skip(page * 10)
     data.exec((err, dishes) => {
         if(err){
             res.json(err)
@@ -398,12 +399,22 @@ dishRouter.route('/item/:id').get((req, res)=> {
     });
 });
 
+// Get a blog
 dishRouter.route('/blog/:id').get((req, res)=> {
     let id = req.params.id;
     Blog.findById(id, (err, blog)=> {
         res.json(blog);
     });
 });
+
+
+// Get user checkout details
+dishRouter.route('/checkout/:id').get((req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if(err){ res.json(err) }
+        else { res.json({addresses: user.addresses, delivery_address: user.delivery_address}) }
+    })
+})
 
 dishRouter.route('/blogs/:id').post(function(req, res){
     let uid = req.body.id;

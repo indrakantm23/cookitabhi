@@ -56,6 +56,18 @@ const User = new mongoose.Schema({
     },
     notifications: {
         type: Array
+    },
+    addresses: {
+        type: Array
+    },
+    delivery_address: {
+        type: Object
+    },
+    current_orders: {
+        type: Array
+    },
+    previously_ordered: {
+        type: Array
     }
 });
 
