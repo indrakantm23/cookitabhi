@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const bcrypt = require('bcryptjs');
 const User = require('./../model/user.model');
 
 const mailer = require('./../mailer/sendMail');
