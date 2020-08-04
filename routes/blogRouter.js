@@ -80,8 +80,17 @@ blogRouter.route('/delete-comment/:id').post((req, res)=>{
     });
 });
 
-
-
+// Post a Blog
+blogRouter.route('/post-blog').post((req, res)=> {
+    let blog = new Blog(req.body);
+    blog.save()
+        .then(blog => {
+            res.status(200).json({blog: 'Blog posted successfully', data: blog});
+        })
+        .catch(err => {
+            res.status(400).send('adding blog failed');
+        });
+});
 
 
 

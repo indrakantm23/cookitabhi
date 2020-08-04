@@ -20,6 +20,15 @@ userRouter.route('/').get((req, res)=> {
 });
 
 
+userRouter.route('/:id').get(function(req, res){
+    User.findById(req.params.id, function(err, user) {
+        if(err) res.json(err)
+        else
+        res.json({user});
+    });
+});
+
+
 // Get shops neerby user
 userRouter.route('/near').get((req, res)=> {
     User.find((err, resp)=> {
