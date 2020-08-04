@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const port = process.env.PORT || 4000;
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const dishRouter = express.Router();
 const multer = require('multer');
 const path = require('path');
@@ -15,7 +15,13 @@ const bcrypt = require('bcryptjs');
 var nodemailer = require('nodemailer');
 
 // const io = require('socket.io')
+const dishRouting = require('./routes/dishRouter');
+const userRouter = require('./routes/userRouter');
+const blogRouter = require('./routes/blogRouter');
+const productRouter = require('./routes/productRouter');
+const storyRouter = require('./routes/storyRouter');
 
+const db = require('./model/db');
 // const users = require('./../components/users');
 // const products = require('./../components/products');
 // const dishData = require('./../components/dishes');
@@ -37,6 +43,12 @@ const Shopping = require('./model/shopping.model');
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use('/dishes', dishRouting);
+app.use('/users', userRouter);
+app.use('/blogs', blogRouter);
+app.use('/products', productRouter);
+app.use('/stories', storyRouter);
+
 
 // app.use(express.static(path.join(__dirname, 'build')));
 
@@ -49,12 +61,14 @@ app.use(bodyParser.json());
 
 // mongodb://127.0.0.1:27017/cookitabhi
 // process.env.MONGODB_URI || 
-mongoose.connect('mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mongodb.net/cookitabhi?retryWrites=true&w=majority', { useNewUrlParser: true,  useUnifiedTopology: true });
-const connection = mongoose.connection;
 
-connection.once('open', ()=> {
-    console.log('MongoDB is connected');
-}); 
+
+// mongoose.connect('mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mongodb.net/cookitabhi?retryWrites=true&w=majority', { useNewUrlParser: true,  useUnifiedTopology: true });
+// const connection = mongoose.connection;
+
+// connection.once('open', ()=> {
+//     console.log('MongoDB is connected');
+// }); 
 
 
 // For Production
@@ -125,19 +139,43 @@ function checkFileType(file, cb){
 //     });
 // });
 
-dishRouter.route('/').get((req, res)=> {
-    const page = parseInt(req.query.skip_page)
-    let data = Dish.find().limit(10).skip(page * 10)
-    data.exec((err, dishes) => {
-        if(err){
-            res.json(err)
-        }else{
-            res.json(dishes)
-        }
-    })
-});
+// dishRouter.route('/').get((req, res)=> {
+//     const page = parseInt(req.query.skip_page)
+//     let data = Dish.find().limit(10).skip(page * 10)
+//     data.exec((err, dishes) => {
+//         if(err){
+//             res.json(err)
+//         }else{
+//             res.json(dishes);
+//         }
+//     })
+// });
 
 
+// function sendOnboardingMail(name, email) {
+//     var transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//             user: 'mevishal23@gmail.com',
+//             pass: 'kusumavishal'
+//         }
+//         });
+        
+//         var mailOptions = {
+//             from: '"Cook it abhi" <mevishal23@gmail.com>',
+//             to: email,
+//             subject: 'Welcome to Cook it abhi',
+//             html: `Hi ${name}, <br/><br/>We welcome you to the Cookitabhi platform :) <br/>You can now access complete platform like Shopping, Connecting with people, reading and writing blogs, posting stories and much more! <br/><br/>Your much friendly cooking app,<br/>Cookitabhi`,
+//             };
+        
+//         transporter.sendMail(mailOptions, function(error, info){
+//             if (error) {
+//                 console.log(error);
+//             } else {
+//                 res.json({status: 200, msg: `Email sent to ${email}`})
+//             }
+//             });
+//     }
 
 // Send reset password mail
 app.post('/reset-pass', (req, res) => {
@@ -184,110 +222,110 @@ app.post('/reset-pass', (req, res) => {
 });
 
 // Get shops neerby user
-dishRouter.route('/near').get((req, res)=> {
-    User.find((err, resp)=> {
-        if(err){
-            console.log(err);
-        }else{
-            // res.json(resp);
-            let arr = [];
-            for(let i=0; i<resp.length; i++){
-                if(resp[i].selectedLandmark != null){
-                    arr.push(resp[i]);
-                }
-            }
-            res.json({arr})
-        }
-    });
-});
+// dishRouter.route('/near').get((req, res)=> {
+//     User.find((err, resp)=> {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             // res.json(resp);
+//             let arr = [];
+//             for(let i=0; i<resp.length; i++){
+//                 if(resp[i].selectedLandmark != null){
+//                     arr.push(resp[i]);
+//                 }
+//             }
+//             res.json({arr})
+//         }
+//     });
+// });
 
 // Search dish
-dishRouter.route('/search/:search_key').get((req, res) => {
-    let key = new RegExp(req.params.search_key, 'i');
-    Dish.find((err, dishes) => {
-        if(err){
-            console.log(err);
-        }else{
-            let arr = dishes.filter(a => {return a.dish.match(key)});
-            let data = arr.map(a => { return {id: a._id, dish: a.dish} })
-            res.json({data});
-        }
-    });
-});
+// dishRouter.route('/search/:search_key').get((req, res) => {
+//     let key = new RegExp(req.params.search_key, 'i');
+//     Dish.find((err, dishes) => {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             let arr = dishes.filter(a => {return a.dish.match(key)});
+//             let data = arr.map(a => { return {id: a._id, dish: a.dish} })
+//             res.json({data});
+//         }
+//     });
+// });
 
 
 // Search product
-dishRouter.route('/search/product/:search_key').get((req, res) => {
-    let key = new RegExp(req.params.search_key, 'i');
-    Shopping.find((err, product) => {
-        if(err){
-            console.log(err);
-        }else{
-            let arr = product.filter(a => {return a.product.match(key)});
-            let data = arr.map(a => { return {id: a._id, product: a.product} })
-            res.json({data});
-        }
-    });
-});
+// dishRouter.route('/search/product/:search_key').get((req, res) => {
+//     let key = new RegExp(req.params.search_key, 'i');
+//     Shopping.find((err, product) => {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             let arr = product.filter(a => {return a.product.match(key)});
+//             let data = arr.map(a => { return {id: a._id, product: a.product} })
+//             res.json({data});
+//         }
+//     });
+// });
 
 
 
 // ADD PRODUCT INTO CART
-dishRouter.route('/add/product/:id').post((req, res) => {
-    let data = req.body.data;
-    User.findById(req.params.id, (err, user) => {
-        user.shoppingCart.push(data);
-        user.save();
-        res.json({shoppingCart: data});
-    });
-});
+// dishRouter.route('/add/product/:id').post((req, res) => {
+//     let data = req.body.data;
+//     User.findById(req.params.id, (err, user) => {
+//         user.shoppingCart.push(data);
+//         user.save();
+//         res.json({shoppingCart: data});
+//     });
+// });
 
 
-// Add quantity of product
-dishRouter.route('/add/quantity/:id').post((req, res) => {
-    let id = req.body.id;
-    User.findById(req.params.id, (err, user) => {
-        user.shoppingCart = req.body.arr;
-        user.save();
-        res.json({shoppingCart: user.shoppingCart});
-    });
-});
+// // Add quantity of product
+// dishRouter.route('/add/quantity/:id').post((req, res) => {
+//     let id = req.body.id;
+//     User.findById(req.params.id, (err, user) => {
+//         user.shoppingCart = req.body.arr;
+//         user.save();
+//         res.json({shoppingCart: user.shoppingCart});
+//     });
+// });
 
-// Reduce quantity of product
-dishRouter.route('/reduce/quantity/:id').post((req, res) => {
-    let id = req.body.id;
-    User.findById(req.params.id, (err, user) => {
-        user.shoppingCart = req.body.arr;
-        user.save();
-        res.json({shoppingCart: user.shoppingCart});
-    });
-});
+// // Reduce quantity of product
+// dishRouter.route('/reduce/quantity/:id').post((req, res) => {
+//     let id = req.body.id;
+//     User.findById(req.params.id, (err, user) => {
+//         user.shoppingCart = req.body.arr;
+//         user.save();
+//         res.json({shoppingCart: user.shoppingCart});
+//     });
+// });
 
-// Get user added products
-dishRouter.route('/get/product/:id').get((req, res) =>{
-    User.findById(req.params.id, (err, user) => {
-        res.json({shoppingCart: user.shoppingCart});
-    })
-})
+// // Get user added products
+// dishRouter.route('/get/product/:id').get((req, res) =>{
+//     User.findById(req.params.id, (err, user) => {
+//         res.json({shoppingCart: user.shoppingCart});
+//     })
+// })
 
-// Get users
-dishRouter.route('/users/:id').get((req, res) => {
-    let myId = req.params.id;
-    User.find((err, users) => {
-        if(err){
-            console.log(err);
-        }
-        else{
-            User.findById(req.params.id, (err, user) => {
-                let arr = user.following || [];
-                let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
-                data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
-                res.json({data});
+// // Get users
+// dishRouter.route('/users/:id').get((req, res) => {
+//     let myId = req.params.id;
+//     User.find((err, users) => {
+//         if(err){
+//             console.log(err);
+//         }
+//         else{
+//             User.findById(req.params.id, (err, user) => {
+//                 let arr = user.following || [];
+//                 let data = users.filter(a => { return arr.indexOf(a._id) === -1 && a._id.toString() !== myId.toString()});
+//                 data = data.map(a => { return {id: a._id, name:a.name, img: a.avatar} });
+//                 res.json({data});
                 
-            })
-        }
-    });
-});
+//             })
+//         }
+//     });
+// });
 
 // Get stories
 dishRouter.route('/stories/:id').get((req, res) => {
@@ -315,106 +353,106 @@ dishRouter.route('/stories/:id').get((req, res) => {
     });
 });
 
-// Delete a story
-dishRouter.route('/delete-story/:id').get((req, res)=>{
-    let id = req.params.id.toString();
-    let query = {_id: id};
-    Story.remove(query, (err, story)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.status(200).json({msg: 'story deleted'})
-        }
-    });
-});
+// // Delete a story
+// dishRouter.route('/delete-story/:id').get((req, res)=>{
+//     let id = req.params.id.toString();
+//     let query = {_id: id};
+//     Story.remove(query, (err, story)=>{
+//         if(err){
+//             console.log(err);
+//         }else{
+//             res.status(200).json({msg: 'story deleted'})
+//         }
+//     });
+// });
 
 
-// Get blogs
-dishRouter.route('/blogs').get((req, res) => {
-    Blog.find((err, blogs) => {
-        if(err){
-            console.log(err);
-        }else{
-            res.json(blogs.slice(0).reverse());
-        }
-    });
-});
+// // Get blogs
+// dishRouter.route('/blogs').get((req, res) => {
+//     Blog.find((err, blogs) => {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             res.json(blogs.slice(0).reverse());
+//         }
+//     });
+// });
 
-// Get products
-dishRouter.route('/products').get((req, res) => {
-    Shopping.find((err, products) => {
-        if(err) {
-            console.log(err);
-        }
-        else{
-            res.json({products});
-        }
-    })
-})
-
-
-// Get blogs of user
-dishRouter.route('/blogs/:id').get((req, res) => {
-    Blog.find((err, blogs) => {
-        if(err){
-            console.log(err);
-        }else{
-            // res.json(blogs.slice(0).reverse());
-            // let arr = blogs.filter((a => { return a.user_id.toString() === req.params.id.toString()}))
-            let arr = blogs.filter((a => { return a.user_id && a.user_id!== null && a.user_id.toString() === req.params.id.toString()}))
-            // arr = arr.map((a => { return a.user_id }))
-            res.json({blogs: arr, blog_count: arr.length})
-
-        }
-    });
-});
-
-// GET A DISH
-dishRouter.route('/:id').get((req, res)=> {
-    let id = req.params.id;
-    Dish.findById(id, (err, dish)=> {
-        res.json(dish);
-    });
-});
-
-// GET A USER
-dishRouter.route('/user/:id').get((req, res)=> {
-    let id = req.params.id;
-    User.findById(id, (err, data)=> {
-        if(err){
-            res.json(err);
-        }else{
-            let user = [];
-            user.push({name: data.name, avatar: data.avatar, business_type: data.business_type, chef: data.chef, email: data.email, followers: data.followers.length, following: data.following.length, runs_business: data.runs_business});
-            res.json(user)
-        }
-    });
-});
-
-// GET A Product
-dishRouter.route('/item/:id').get((req, res)=> {
-    let id = req.params.id;
-    Shopping.findById(id, (err, item)=> {
-        res.json(item);
-    });
-});
-
-// Get a blog
-dishRouter.route('/blog/:id').get((req, res)=> {
-    let id = req.params.id;
-    Blog.findById(id, (err, blog)=> {
-        res.json(blog);
-    });
-});
+// // Get products
+// dishRouter.route('/products').get((req, res) => {
+//     Shopping.find((err, products) => {
+//         if(err) {
+//             console.log(err);
+//         }
+//         else{
+//             res.json({products});
+//         }
+//     })
+// })
 
 
-// Get user checkout details
-dishRouter.route('/checkout/:id').get((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if(err){ res.json(err) }
-        else { res.json({addresses: user.addresses, delivery_address: user.delivery_address}) }
-    })
-})
+// // Get blogs of user
+// dishRouter.route('/blogs/:id').get((req, res) => {
+//     Blog.find((err, blogs) => {
+//         if(err){
+//             console.log(err);
+//         }else{
+//             // res.json(blogs.slice(0).reverse());
+//             // let arr = blogs.filter((a => { return a.user_id.toString() === req.params.id.toString()}))
+//             let arr = blogs.filter((a => { return a.user_id && a.user_id!== null && a.user_id.toString() === req.params.id.toString()}))
+//             // arr = arr.map((a => { return a.user_id }))
+//             res.json({blogs: arr, blog_count: arr.length})
+
+//         }
+//     });
+// });
+
+// // GET A DISH
+// dishRouter.route('/:id').get((req, res)=> {
+//     let id = req.params.id;
+//     Dish.findById(id, (err, dish)=> {
+//         res.json(dish);
+//     });
+// });
+
+// // GET A USER
+// dishRouter.route('/user/:id').get((req, res)=> {
+//     let id = req.params.id;
+//     User.findById(id, (err, data)=> {
+//         if(err){
+//             res.json(err);
+//         }else{
+//             let user = [];
+//             user.push({name: data.name, avatar: data.avatar, business_type: data.business_type, chef: data.chef, email: data.email, followers: data.followers.length, following: data.following.length, runs_business: data.runs_business});
+//             res.json(user)
+//         }
+//     });
+// });
+
+// // GET A Product
+// dishRouter.route('/item/:id').get((req, res)=> {
+//     let id = req.params.id;
+//     Shopping.findById(id, (err, item)=> {
+//         res.json(item);
+//     });
+// });
+
+// // Get a blog
+// dishRouter.route('/blog/:id').get((req, res)=> {
+//     let id = req.params.id;
+//     Blog.findById(id, (err, blog)=> {
+//         res.json(blog);
+//     });
+// });
+
+
+// // Get user checkout details
+// dishRouter.route('/checkout/:id').get((req, res) => {
+//     User.findById(req.params.id, (err, user) => {
+//         if(err){ res.json(err) }
+//         else { res.json({addresses: user.addresses, delivery_address: user.delivery_address}) }
+//     });
+// });
 
 dishRouter.route('/blogs/:id').post(function(req, res){
     let uid = req.body.id;
@@ -452,95 +490,96 @@ dishRouter.route('/blogs/:id').post(function(req, res){
     });
 });
 
-// Follow a user
-dishRouter.route('/user/:id').post(function(req, res){
-    let followId = req.body.followId;
-    var uId = req.params.id;
-    User.findById(req.params.id, function(err, user){
-        if(err){
-             res.json(err)
-        }
-        else {
-            user.following && user.following.push(followId);
-            user.save();
-            User.findById(followId, function(err, userData){
-                userData.followers.push(uId)
-                userData.save();
-            })
-            res.json({following: user.following})
-        };
-    });
-});
 
-// Post a comment
-dishRouter.route('/addComment/:id').post(function(req, res){
-    Blog.findById(req.params.id, (err, blog) => {
-        if(err) {
-            res.json({ err });
-        }else{
-            blog.comments.push(req.body);
-            blog.save();
-            res.json({comments: blog.comments})
-        }
-    });
-});
+// // Follow a user
+// dishRouter.route('/user/:id').post(function(req, res){
+//     let followId = req.body.followId;
+//     var uId = req.params.id;
+//     User.findById(req.params.id, function(err, user){
+//         if(err){
+//              res.json(err)
+//         }
+//         else {
+//             user.following && user.following.push(followId);
+//             user.save();
+//             User.findById(followId, function(err, userData){
+//                 userData.followers.push(uId)
+//                 userData.save();
+//             })
+//             res.json({following: user.following})
+//         };
+//     });
+// });
 
-// Get blog comments
-dishRouter.route('/getComment/:id').get(function(req, res){
-    Blog.findById(req.params.id, (err, blog) => {
-        if(err) {
-            res.json({ err });
-        }else{
-            res.json({comments: blog.comments})
-        }
-    });
-});
+// // Post a comment
+// dishRouter.route('/addComment/:id').post(function(req, res){
+//     Blog.findById(req.params.id, (err, blog) => {
+//         if(err) {
+//             res.json({ err });
+//         }else{
+//             blog.comments.push(req.body);
+//             blog.save();
+//             res.json({comments: blog.comments})
+//         }
+//     });
+// });
 
-
-// Delete a comment
-dishRouter.route('/delete-comment/:id').post((req, res)=>{
-    let i = req.body.i;
-    Blog.findById(req.params.id, (err, blog) => {
-        if(err){
-            res.json({err});
-        }else{
-            blog.comments.splice(i, 1);
-            blog.save();
-            res.json({comments: blog.comments});
-        }
-    });
-});
+// // Get blog comments
+// dishRouter.route('/getComment/:id').get(function(req, res){
+//     Blog.findById(req.params.id, (err, blog) => {
+//         if(err) {
+//             res.json({ err });
+//         }else{
+//             res.json({comments: blog.comments})
+//         }
+//     });
+// });
 
 
-// Push notifications
-dishRouter.route('/notify/:id').post((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if(err){
-            res.json(err)
-        }
-        else{
-            if(user !== null){
-                user.notifications.push(req.body.data);
-                user.save();
-                res.json({status: 200, data_pushed: true})
-            }else{
-                res.json({err: 'User is null'})
-            }
-        }
-    });
-});
+// // Delete a comment
+// dishRouter.route('/delete-comment/:id').post((req, res)=>{
+//     let i = req.body.i;
+//     Blog.findById(req.params.id, (err, blog) => {
+//         if(err){
+//             res.json({err});
+//         }else{
+//             blog.comments.splice(i, 1);
+//             blog.save();
+//             res.json({comments: blog.comments});
+//         }
+//     });
+// });
 
 
-// Get notifications
-dishRouter.route('/get-notifications/:id').get((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if(err){
-            res.json(err);
-        }else{
-            res.json(user.notifications);
-        }
-    });
-});
+// // Push notifications
+// dishRouter.route('/notify/:id').post((req, res) => {
+//     User.findById(req.params.id, (err, user) => {
+//         if(err){
+//             res.json(err)
+//         }
+//         else{
+//             if(user !== null){
+//                 user.notifications.push(req.body.data);
+//                 user.save();
+//                 res.json({status: 200, data_pushed: true})
+//             }else{
+//                 res.json({err: 'User is null'})
+//             }
+//         }
+//     });
+// });
+
+
+// // Get notifications
+// dishRouter.route('/get-notifications/:id').get((req, res) => {
+//     User.findById(req.params.id, (err, user) => {
+//         if(err){
+//             res.json(err);
+//         }else{
+//             res.json(user.notifications);
+//         }
+//     });
+// });
 
 
 dishRouter.route('/user/:id').get(function(req, res){
@@ -551,52 +590,50 @@ dishRouter.route('/user/:id').get(function(req, res){
     });
 });
 
-// Get following list
-dishRouter.route('/following/:id').get(function(req, res) {
-    
-    User.findById(req.params.id, function(err, user){
-        if(err) {
-            res.json(err);
-        }
-        else{
-            var arr = user.following || [];
-            var arr2 = user.followers || [];
-            var following=[];
-            var followers = [];
+// // Get following list
+// dishRouter.route('/following/:id').get(function(req, res) {
+//     User.findById(req.params.id, function(err, user){
+//         if(err) {
+//             res.json(err);
+//         }
+//         else{
+//             var arr = user.following || [];
+//             var arr2 = user.followers || [];
+//             var following=[];
+//             var followers = [];
 
 
-            for(var i=0; i<arr.length; i++){
-                    User.findById(arr[i], (err, followingList) => {
-                        if(followingList !== null){
-                            following.push({id: followingList._id, name: followingList.name, img: followingList.avatar});
-                        }
-                })                        
-            }
+//             for(var i=0; i<arr.length; i++){
+//                     User.findById(arr[i], (err, followingList) => {
+//                         if(followingList !== null){
+//                             following.push({id: followingList._id, name: followingList.name, img: followingList.avatar});
+//                         }
+//                 })                        
+//             }
 
-            for(var i=0; i<arr2.length; i++){
-                User.findById(arr2[i], (err, followerList) => {
-                    if(followerList !== null) 
-                    followers.push({id: followerList._id, name: followerList.name, img: followerList.avatar});    
-                })
-            }
-            setTimeout(() => {
-                res.json({following, followers})
-            }, 1000)
-        }
-    });
-});
+//             for(var i=0; i<arr2.length; i++){
+//                 User.findById(arr2[i], (err, followerList) => {
+//                     if(followerList !== null) 
+//                     followers.push({id: followerList._id, name: followerList.name, img: followerList.avatar});    
+//                 })
+//             }
+//             setTimeout(() => {
+//                 res.json({following, followers})
+//             }, 1000)
+//         }
+//     });
+// });
 
 
 
-// Get user's liked blogs
-dishRouter.get('/liked-blogs/:id', (req, res) => {
-  User.findById(req.params.id, function(err, user){
-      if(err) res.json({err : 'Something went wrong'})
-      else
-      res.json({liked_blogs: user.liked_blogs ?  user.liked_blogs : [], following: user.following ? user.following : []})
-    // console.log(user)
-  });  
-});
+// // Get user's liked blogs
+// dishRouter.get('/liked-blogs/:id', (req, res) => {
+//   User.findById(req.params.id, function(err, user){
+//       if(err) res.json({err : 'Something went wrong'})
+//       else
+//       res.json({liked_blogs: user.liked_blogs ?  user.liked_blogs : [], following: user.following ? user.following : []})
+//   });  
+// });
 
 
 
@@ -628,91 +665,93 @@ app.post('/upload', (req, res)=> {
 });
 
 
-dishRouter.route('/insert').post((req, res)=> {
-    let dish = new Dish(req.body);
-    dish.save()
-        .then(dish => {
-            res.status(200).json({dish: 'dish added successfully'});
-        })
-        .catch(err => {
-            res.status(400).send('adding dish failed');
-        });
-});
+// dishRouter.route('/insert').post((req, res)=> {
+//     let dish = new Dish(req.body);
+//     dish.save()
+//         .then(dish => {
+//             res.status(200).json({dish: 'dish added successfully'});
+//         })
+//         .catch(err => {
+//             res.status(400).send('adding dish failed');
+//         });
+// });
 
 
-// Post Story
-dishRouter.route('/post-story').post((req, res) => {
-    let story = new Story(req.body);
-    story.save().then(story => {
-        res.status(200).json({msg: 'Story posted successfully', story});
-    })
-    .catch(err => {
-        res.status(400).send('Failed posting story');
-    });
-});
+// // Post Story
+// dishRouter.route('/post-story').post((req, res) => {
+//     let story = new Story(req.body);
+//     story.save().then(story => {
+//         res.status(200).json({msg: 'Story posted successfully', story});
+//     })
+//     .catch(err => {
+//         res.status(400).send('Failed posting story');
+//     });
+// });
 
 
-// Register
-dishRouter.route('/register').post((req, res) => {
-    let email = req.body.email;
-    User.findOne({email, email}).then(user => {
-        if(user){
-            res.status(400).json({user: 'User already exist'});
-        }else{
-            let user = new User(req.body);
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(user.password, salt, (err, hash) => {
-                    if(err) throw err;
-                    user.password = hash;
-                    user.save()
-                    .then(user => {
-                        res.status(200).json({user: 'User created successfully'});
-                    })
-                    .catch(err => {
-                        res.status(400).send('Failed creating user');
-                    });
-                })
-            })
-        }
-    })
-});
+// // Register
+// dishRouter.route('/register').post((req, res) => {
+//     let email = req.body.email;
+//     User.findOne({email, email}).then(user => {
+//         if(user){
+//             res.status(400).json({user: 'User already exist'});
+//         }else{
+//             let user = new User(req.body);
+//             bcrypt.genSalt(10, (err, salt) => {
+//                 bcrypt.hash(user.password, salt, (err, hash) => {
+//                     if(err) throw err;
+//                     user.password = hash;
+//                     user.save()
+//                     .then(user => {
+//                         res.status(200).json({user: 'User created successfully'});
+//                         sendOnboardingMail(user.name, user.email);
+                        
+//                     })
+//                     .catch(err => {
+//                         res.status(400).send('Failed creating user');
+//                     });
+//                 });
+//             });
+//         }
+//     });
+// });
 
 
-// Set new password
-dishRouter.route('/change-password').post((req, res) => {
-    User.findOne({email: req.body.email}).then(user => {
-        if(user){
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(req.body.password, salt, (err, hash) => {
-                    if(err) throw err;
-                    user.password = hash;
-                    user.save()
-                    .then(user => {
-                        res.status(200).json({msg: 'Password updated successfully'});
-                    })
-                    .catch(err => {
-                        res.status(400).send('Failed updating password');
-                    });
-                })
-            })
-        }
-    })
-})
+// // Set new password
+// dishRouter.route('/change-password').post((req, res) => {
+//     User.findOne({email: req.body.email}).then(user => {
+//         if(user){
+//             bcrypt.genSalt(10, (err, salt) => {
+//                 bcrypt.hash(req.body.password, salt, (err, hash) => {
+//                     if(err) throw err;
+//                     user.password = hash;
+//                     user.save()
+//                     .then(user => {
+//                         res.status(200).json({msg: 'Password updated successfully'});
+//                     })
+//                     .catch(err => {
+//                         res.status(400).send('Failed updating password');
+//                     });
+//                 });
+//             });
+//         }
+//     });
+// });
 
-// Login
-dishRouter.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, userData, info) => {
-        if(err){ return next(err) }
-        if(!userData){
-            // console.log(info);
-           return res.json({info, loggedIn: false})
-        }
-        console.log('Logged in');
-        let user = userData;
-        delete user.password;
-        return res.status(200).json({user: {id: user._id, name: user.name, email: user.email, photo: user.avatar, loggedIn: true || ""}, loggedIn: true});
-    })(req, res, next);
-});
+// // Login
+// dishRouter.post('/login', (req, res, next) => {
+//     passport.authenticate('local', (err, userData, info) => {
+//         if(err){ return next(err) }
+//         if(!userData){
+//             // console.log(info);
+//            return res.json({info, loggedIn: false})
+//         }
+//         console.log('Logged in');
+//         let user = userData;
+//         delete user.password;
+//         return res.status(200).json({user: {id: user._id, name: user.name, email: user.email, photo: user.avatar, loggedIn: true || ""}, loggedIn: true});
+//     })(req, res, next);
+// });
 
 
 
@@ -864,28 +903,28 @@ app.get('/',(req,res) => {
 
 
 
-// CHECK EMAIL
-app.get('/check-email/:email', (req, res) => {
-    User.findOne({ email: req.params.email }).then(user => {
-        if(user) {
-            res.json({msg: `User already exist with ${req.params.email}`, userExist: true })
-        }else{
-            res.json({msg: `${req.params.email} is available`, userExist: false})
-        }
-    });
-});
+// // CHECK EMAIL
+// app.get('/check-email/:email', (req, res) => {
+//     User.findOne({ email: req.params.email }).then(user => {
+//         if(user) {
+//             res.json({msg: `User already exist with ${req.params.email}`, userExist: true })
+//         }else{
+//             res.json({msg: `${req.params.email} is available`, userExist: false})
+//         }
+//     });
+// });
 
 
-// CHECK USERNAME
-app.get('/check-username/:username', (req, res) => {
-    User.findOne({ username: req.params.username }).then(user => {
-        if(user) {
-            res.json({msg: `User already exist with ${req.params.username}`, userExist: true })
-        }else{
-            res.json({msg: `${req.params.username} is available`, userExist: false})
-        }
-    });
-});
+// // CHECK USERNAME
+// app.get('/check-username/:username', (req, res) => {
+//     User.findOne({ username: req.params.username }).then(user => {
+//         if(user) {
+//             res.json({msg: `User already exist with ${req.params.username}`, userExist: true })
+//         }else{
+//             res.json({msg: `${req.params.username} is available`, userExist: false})
+//         }
+//     });
+// });
 
 
 
@@ -904,45 +943,8 @@ http://localhost:5000/users?page=2&limit=5
 // 	res.json(res.paginatedResults)
 // });
 
-app.get('/newdishes', paginatedResults(Dish), (req, res) => {
-	res.json(res.paginatedResults)
-});
 
-function paginatedResults(model){
-	
-	return async(req, res, next) => {
-		const page = parseInt(req.query.page)
-		const limit = parseInt(req.query.limit)
-		const startIndex = (page - 1) * limit
-		const endIndex = page * limit
 
-		const results = {}
-
-		if(endIndex < await model.countDocuments().exec()){
-			results.next={
-			page: page+1,
-			limit: limit
-		}
-	}
-
-		if(startIndex > 0){
-			results.previous={
-			page: page-1,
-			limit: limit
-		}
-	}
-
-		try{
-			results.results = await model.find().limit(limit).skip(startIndex).exec();
-			res.paginatedResults = results;
-			next()
-	}
-	catch(e){
-	res.status(500).json({ message: e.message })
-}
-}
-
-}
 
 
 
