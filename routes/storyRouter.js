@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Story = require('./../model/story.model');
+const User = require('./../model/user.model');
 
 const storyRouter = express.Router();
 storyRouter.use(bodyParser.json());
@@ -42,5 +43,33 @@ storyRouter.route('/delete-story/:id').get((req, res)=>{
         }
     });
 });
+
+
+
+// Get stories
+storyRouter.route('/stories/:id').get((req, res) => {
+    let id = req.params.id;
+    var arr = [];
+    Story.find((err, stories) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findById(id, (err, user) => {
+                let following = user && user.following && user.following.length ? user.following : [];
+                
+                for(var i=0; i<stories.length; i++){
+                    if(following.indexOf(stories[i].user.id) !== -1 || following.indexOf(id) !== -1){
+                        arr.push(stories[i])
+                    }
+                }
+            })
+            setTimeout(()=> {
+                res.json({arr})
+            }, 100)
+        }
+    });
+});
+
 
 module.exports = storyRouter;

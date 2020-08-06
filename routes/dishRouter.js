@@ -7,8 +7,8 @@ dishRouting.use(bodyParser.json());
 
 // GET ALL DISHES
 dishRouting.route('/').get((req, res)=> {
-    const page = parseInt(req.query.skip_page)
-    let data = Dish.find().limit(10).skip(page * 10)
+    const page = parseInt(req.query.limit_page)
+    let data = Dish.find().limit(page * 10)
     data.exec((err, dishes) => {
         if(err){
             res.json(err);

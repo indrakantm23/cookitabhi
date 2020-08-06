@@ -9,7 +9,7 @@ mongoose.connect('mongodb+srv://indrakant:Vishal@123@cookitabhicluster.ppui1.mon
 const connection = mongoose.connection;
 
 connection.once('open', ()=> {
-    console.log('MongoDB is connected seperately');
+    console.log('MongoDB is connected');
 }); 
 
 module.exports = connection;

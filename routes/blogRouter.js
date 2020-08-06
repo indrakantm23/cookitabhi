@@ -94,5 +94,41 @@ blogRouter.route('/post-blog').post((req, res)=> {
 
 
 
+blogRouter.route('/blog/:id').post(function(req, res){
+    let uid = req.body.id;
+    let blogId = req.params.id;
+    let likeData = {}; let likeBlogs = [];
+    Blog.findById(req.params.id, function(err, blog){
+        if(!blog)
+            res.status(404).send('Blog not found');
+        else
+            blog.total_likes = blog.total_likes+1;
+            blog.liked = true
+
+            blog.save().then(blog => {
+                // res.json({total_likes: blog.total_likes})
+                likeData.total_likes = blog.total_likes;
+                User.findById(uid, (err, user)=> {
+                    user.liked_blogs.push(blogId);
+                    
+                    user.save();
+                    likeBlogs = user.liked_blogs;
+                    res.json({likeData, likeBlogs})
+                })
+                // res.json({likeData, likeBlogs})
+            })
+            // .then(res => 
+            //     User.findById(uid, (err, user)=> {
+            //         user.liked_blogs.push(blogId);
+            //         user.save();
+            //         console.log(user);
+            //     })
+            //     )
+            .catch(err => {
+                res.status(400).send('Count not like');
+            });
+    });
+});
+
 
 module.exports = blogRouter;
