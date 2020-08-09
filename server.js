@@ -106,6 +106,9 @@ app.post('/reset-pass', (req, res) => {
     User.findOne({email: req.body.email}, (err, user) => {
         if(user){
             var transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 service: 'gmail',
                 auth: {
                   user: 'mevishal23@gmail.com',
