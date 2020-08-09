@@ -107,7 +107,7 @@ app.post('/reset-pass', (req, res) => {
         if(user){
             var transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
-                port: 465,
+                port: 587, //465 587
                 secure: true,
                 service: 'gmail',
                 auth: {
