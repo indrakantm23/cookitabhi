@@ -3,12 +3,15 @@ var nodemailer = require('nodemailer');
 // SEND WELCOME MAIL AFTER USER SIGNUP
 const sendOnboardingMail = (name, email) =>{
     var transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465, //465 587
+        secure: true,
         service: 'gmail',
         auth: {
-            user: 'mevishal23@gmail.com',
-            pass: 'kusumavishal'
+          user: 'mevishal23@gmail.com',
+          pass: 'kusumavishal'
         }
-        });
+      });
         
         var mailOptions = {
             from: '"Cook it abhi" <mevishal23@gmail.com>',
