@@ -34,7 +34,7 @@ userRouter.route('/:id').get(function(req, res){
 
 
 // Get shops neerby user
-userRouter.route('/near').get((req, res)=> {
+userRouter.route('/nearby').get((req, res)=> {
     User.find((err, resp)=> {
         if(err){
             console.log(err);
@@ -50,6 +50,8 @@ userRouter.route('/near').get((req, res)=> {
         }
     });
 });
+
+
 
 
 // ADD PRODUCT INTO CART
@@ -330,17 +332,17 @@ userRouter.route('/change-password').post((req, res) => {
 
 
 // Seen a notification
-userRouter.route('/seen-notification/:id').post((req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if(err){
-            res.json({err});
-        }else {
-            user.notifications.filter(obj => obj.id == req.body.id)[0].seen = true;
-            user.save();
-            res.json({notifications: user.notifications, notification_seen: true});
-        }
-    })
-})
+// userRouter.route('/seen-notification/:id').post((req, res) => {
+//     User.findById(req.params.id, (err, user) => {
+//         if(err){
+//             res.json({err});
+//         }else {
+//             user.notifications.filter(obj => obj.id == req.body.id)[0].seen = true;
+//             user.save();
+//             res.json({notifications: user.notifications, notification_seen: true});
+//         }
+//     })
+// })
 
 
 
