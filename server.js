@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -39,9 +40,11 @@ const Blog = require('./model/blog.model');
 const User = require('./model/user.model');
 const Story = require('./model/story.model');
 const Shopping = require('./model/shopping.model');
+// const { config } = require('dotenv/types');
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // EXPRESS ROUTERS
 app.use('/dishes', dishRouting);
@@ -196,7 +199,7 @@ app.use('/dishes', dishRouter);
 
 
 // INSERT SCRAPE IMAGE
-app.get('/', (req, res) => {
+// app.get('/', (req, res) => {
 
     
     // INSERT PRODUCT DATA 
@@ -234,7 +237,7 @@ app.get('/', (req, res) => {
     //     })
     //     .catch((err) => console.error(err));                
     // }
-})
+// })
 
 // if(process.env.NODE_ENV === 'production') {
 //     app.use(express.static('../client/build'));
@@ -244,8 +247,36 @@ app.get('/', (req, res) => {
 //     return res.send('I am listening');
 // });
 
+const posts = [
+    {name: 'Indrakant', title: 'Engineer'},
+    {name: 'Vishal', title: 'Doctor'}
+]
 
+app.get("/posts", authenticaseToken, (req, res) => {
+    res.json(posts.filter(post => post.name == req.user.name));
+    
+})
 
+app.post('/auth', (req, res) => {
+    const username = req.body.username;
+    const user = { name: username }
+
+    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+    res.json({accessToken: accessToken});
+    console.log({accessToken})
+})
+
+function authenticaseToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if(token == null) return res.sendStatus(401)
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if(err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    })
+}
 
 
 app.listen(port, () => console.log(`Server is listening at http://localhost:${port}`))

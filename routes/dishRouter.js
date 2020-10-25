@@ -27,7 +27,7 @@ dishRouting.route('/search/:search_key').get((req, res) => {
             console.log(err);
         }else{
             let arr = dishes.filter(a => {return a.dish.match(key)});
-            let data = arr.map(a => { return {id: a._id, dish: a.dish} })
+            let data = arr.map(a => { return {id: a._id, dish: a.dish, file: a.file, category: a.category, cookingTime: a.cookingTime} })
             res.json({data});
         }
     });

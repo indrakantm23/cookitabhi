@@ -46,7 +46,10 @@ userRouter.route('/nearby').get((req, res)=> {
                     arr.push(resp[i]);
                 }
             }
-            res.json({arr})
+            console.log(arr)
+            // setTimeout(() => {
+            //     res.json({arr})
+            // }, 400)
         }
     });
 });
@@ -272,7 +275,7 @@ userRouter.post('/login', (req, res, next) => {
             // console.log(info);
            return res.json({info, loggedIn: false})
         }
-        console.log('Logged in');
+        // console.log('Logged in');
         let user = userData;
         delete user.password;
         return res.status(200).json({user: {id: user._id, name: user.name, email: user.email, photo: user.avatar, loggedIn: true || ""}, loggedIn: true});
