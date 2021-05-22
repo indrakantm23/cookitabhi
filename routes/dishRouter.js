@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Dish = require('./../model/dish.model');
+const Shopping = require('./../model/shopping.model');
 
 const dishRouting = express.Router();
 dishRouting.use(bodyParser.json());
@@ -34,6 +35,8 @@ dishRouting.route('/search/:search_key').get((req, res) => {
 });
 
 
+
+
 // GET A DISH
 dishRouting.route('/:id').get((req, res)=> {
     let id = req.params.id;
@@ -55,6 +58,28 @@ dishRouting.route('/insert').post((req, res)=> {
         });
 });
 
+
+// GET ALL PRODUCTS FROM INGREDIENT
+dishRouting.route('/autoaddtocard').post((req, res) => {
+    let splitted = req.body.data.split(" ");
+    let final = [];
+    for(let i=0; i<splitted.length; i++){
+    
+        let key = new RegExp(splitted[i], 'i');
+        Shopping.find((err, product) => {
+            if(err){
+                console.log(err);
+            }else{
+                let arr = product.filter(a => {return a.product.match(key)});
+                final.push(arr.map(a => { return {id: a._id, product: a.product, file: a.img, qty: a.qty, price: a.price, category: a.category} }))
+                // res.status(200).json({final});
+            }
+        }).catch(err => {console.log(err)})
+    }
+    setTimeout(() => {
+        res.status(200).json({res: final.filter(a => a.length>0)});
+    }, 1000)
+})
 
 
 
